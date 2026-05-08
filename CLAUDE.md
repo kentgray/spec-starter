@@ -57,3 +57,21 @@ Numbered steps of the exact changes to make.
 ```
 
 Or study the completed example in `specs/example-add-greeting.md` alongside `hello.py`.
+
+## Knowledge Graph
+
+This project uses [lat.md](https://www.npmjs.com/package/lat.md) to document its design intent in `lat.md/`. Before starting work, search it:
+
+```bash
+lat search "what you're working on"   # semantic search
+lat section "workflow#Spec Format"    # read a specific section
+lat check                             # validate all links
+```
+
+The hook fires automatically on every prompt — you don't need to run `lat search` manually.
+
+Key sections:
+- `[[workflow]]` — the 4-step loop, spec format, status lifecycle, design decisions
+- `[[commands]]` — inputs, outputs, state transitions, and edge cases for each command
+
+After adding or changing commands or workflow behavior, update `lat.md/` and run `lat check`.
