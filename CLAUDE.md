@@ -2,7 +2,7 @@
 
 This repo teaches spec-driven development through a 4-step loop. Every feature you build goes through the same sequence: **Draft → Review → Implement → Validate**.
 
-## The 4 Commands
+## The 4 Commands (manual)
 
 | Step | Command | What Happens |
 |------|---------|--------------|
@@ -10,6 +10,18 @@ This repo teaches spec-driven development through a 4-step loop. Every feature y
 | 2 | `/spec-review specs/<file>.md` | Reviews the spec, approves or requests changes |
 | 3 | `/spec-implement specs/<file>.md` | Implements the code from the spec |
 | 4 | `/spec-validate specs/<file>.md` | Checks the implementation against the spec |
+
+## The Orchestrator (after you've done the manual cycle)
+
+```
+/spec-build "what to build"
+```
+
+Runs all four steps in sequence. Two hard gates stop the pipeline if action is needed:
+- **Review gate**: stops if the spec has issues — fix and re-run
+- **Validate gate**: stops if any verification check fails — fix and re-run
+
+One human checkpoint remains: after drafting, the pipeline shows you the spec and waits for your approval before implementing. Spec content is a design decision you should own.
 
 ## Why the Loop Matters
 

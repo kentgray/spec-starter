@@ -1,6 +1,6 @@
 # Commands
 
-The four slash commands implement the [[workflow#Status Lifecycle]] state machine. Each command is defined in `.claude/commands/` as a markdown file Claude Code reads as instructions.
+Five slash commands implement the [[workflow#Status Lifecycle]] state machine. Four are manual steps; one is the orchestrator that runs them all. Each is defined in `.claude/commands/` as a markdown file Claude Code reads as instructions.
 
 ## spec-draft
 
@@ -55,3 +55,23 @@ Runs every item in the spec's Verification section and reports pass/fail with ev
 **State transition**: updates `Status: implemented` → `Status: validated` only if ALL items pass. Partial passes do not advance the status.
 
 **Output**: a table of checks with results and evidence, an overall PASS / FAIL verdict, and next steps.
+
+## spec-build
+
+Orchestrator that runs all four steps in sequence for a zero-touch pipeline. Designed as a [[workflow#Orchestrator]] graduation feature — meant to be used after the learner has completed the manual cycle at least once.
+
+**Input**: `$ARGUMENTS` — same one-line description passed to `/spec-draft`.
+
+**Step 0 — Readiness check**: scans `specs/` for any `Status: validated` spec. Warns (does not block) if none found — the user hasn't done a manual cycle yet.
+
+**Step 1 — Draft**: runs spec-draft logic, then pauses to show the draft and ask for confirmation before continuing. This is the one human checkpoint in the pipeline — spec content is a design decision, not something to automate away.
+
+**Hard gate 1 — Review**: runs spec-review logic. If NEEDS REVISION, the pipeline stops with a numbered issue list. The user must fix the spec and re-run. This gate exists because implementing against a bad spec wastes all subsequent effort.
+
+**Step 3 — Implement**: runs spec-implement logic, commits changes.
+
+**Hard gate 2 — Validate**: runs spec-validate logic. If any check fails, the pipeline stops with evidence of what failed. Does not push on failure.
+
+**On success**: updates status to `validated`, commits, and pushes. Prints a summary note connecting the completed pipeline to how ADW works at scale.
+
+**Pipeline summary**: shown on any stop — a status table for all four steps so the user knows exactly where the pipeline halted and what to do next.

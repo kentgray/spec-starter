@@ -78,3 +78,30 @@ Without this, verification is retrofitted to match whatever was built. If you ca
 ### Why committed specs?
 
 Specs are committed to git alongside code. This means every feature in the repo's history has a corresponding spec that explains why it was built. The spec is not documentation added after the fact — it is the prerequisite that gates implementation.
+
+## Orchestrator
+
+`/spec-build` is the graduation command — it runs all four steps in sequence for a zero-touch pipeline. It is designed to be used *after* the learner has done the manual cycle at least once.
+
+The orchestrator has two hard gates where the pipeline stops and requires human action:
+
+| Gate | Condition | Why it's a hard stop |
+|------|-----------|----------------------|
+| After Review | NEEDS REVISION | Implementing against a bad spec wastes all subsequent work |
+| After Validate | Any check fails | Silent failures are worse than visible ones; do not push broken code |
+
+One intentional human checkpoint remains even in zero-touch mode: after drafting, the orchestrator shows the spec and asks for confirmation before proceeding. Spec content represents design decisions that should not be automated away — the human needs to own what they're building.
+
+### Connection to ADW
+
+The `/spec-build` pipeline is a miniature version of the ADW (Agentic Developer Workflow) used in production:
+
+| spec-build | ADW equivalent |
+|------------|----------------|
+| `/spec-draft` prompt | `/spec-create` + digest task registration |
+| Review gate | Spec review before dispatch |
+| `/spec-implement` | ADW agent runs `/implement` in target project |
+| Validate gate | PR checks + architect verification |
+| `git push` | PR auto-complete + merge |
+
+The difference is scale: ADW operates across multiple projects with a task queue, overnight scheduling, and Azure DevOps pipelines. The loop is identical.
